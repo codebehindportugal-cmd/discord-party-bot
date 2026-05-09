@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "source": "old-bot",
+  "games": [
+    {
+      "name": "Albion Online",
+      "emoji": "🛡️",
+      "active": true,
+      "isGlobal": true,
+      "parties": {
+        "Party 1": [
+          "Caller",
+          "HeavyMace",
+          "1h Hammer",
+          "HallowFall",
+          "HallowFall",
+          "HallowFall",
+          "Rampant",
+          "Geat Arcane",
+          "1h Arcane",
+          "Rootbound",
+          "OathKeepers",
+          "Locus (Def)",
+          "Lifecurse",
+          "Spirit Hunter",
+          "Realmbreaker",
+          "Spiked",
+          "Permafrost",
+          "Hellfire Hands",
+          "Rift Glaive",
+          "Rift Glaive"
+        ],
+        "Party 2": [
+          "2nd Caller",
+          "Incubus Mace",
+          "Heavy Mase",
+          "Grovekeeper",
+          "BedRock",
+          "HallowFall",
+          "HallowFall",
+          "HallowFall",
+          "Fallen",
+          "Great Arcane",
+          "RootBound",
+          "Oathkeepers",
+          "Occult Staff",
+          "Damnation",
+          "Dawnsong",
+          "Spirit hunter",
+          "Great Frost Staff",
+          "HellFire hands",
+          "Rift Glaive",
+          "Rift Glaive"
+        ],
+        "Party 3": [
+          "Rift Glaive",
+          "Chariot",
+          "Eagle",
+          "Eagle",
+          "Siege Balista",
+          "Siege Balista",
+          "Behemoth",
+          "Behemoth"
+        ]
+      }
+    },
+    {
+      "name": "League of Legends",
+      "emoji": "🎮",
+      "active": true,
+      "isGlobal": true,
+      "parties": {
+        "Team": ["Top", "Jungle", "Mid", "ADC", "Support"]
+      }
+    },
+    {
+      "name": "Valorant",
+      "emoji": "🎮",
+      "active": true,
+      "isGlobal": true,
+      "parties": {
+        "Squad": ["Duelist", "Initiator", "Controller", "Sentinel", "Flex"]
+      }
+    },
+    {
+      "name": "Metin2",
+      "emoji": "🎮",
+      "active": true,
+      "isGlobal": true,
+      "parties": {
+        "1": ["Arqueiro"]
+      }
+    },
+    {
+      "name": "lol",
+      "emoji": "🎮",
+      "active": true,
+      "isGlobal": true,
+      "parties": {
+        "1": ["gank"]
+      }
+    },
+    {
+      "name": "GANK",
+      "emoji": "🎮",
+      "active": true,
+      "isGlobal": true,
+      "parties": {
+        "1": [
+          "maça",
+          "cajado gelo",
+          "doubleblade",
+          "doubleblade",
+          "healer",
+          "patas urso",
+          "patas urso",
+          "patas urso",
+          "arco",
+          "arco",
+          "arco",
+          "arco",
+          "karvin",
+          "arma gank",
+          "arma gank",
+          "arma gank",
+          "arma gank",
+          "arma gank",
+          "arma gank"
+        ]
+      }
+    },
+    {
+      "name": "DG avaloniana",
+      "emoji": "🎮",
+      "active": true,
+      "isGlobal": true,
+      "parties": {
+        "1": [
+          "caller",
+          "segundo tank",
+          "healer principal",
+          "raizferrea-healer",
+          "raizferrea-healer",
+          "raizferrea-healer",
+          "raizferrea-monge negro",
+          "arcano elevado",
+          "arcanos silence",
+          "bruxo crytal",
+          "fire",
+          "gelo",
+          "caça espiritos",
+          "quebra reinos",
+          "aguia",
+          "besta leve",
+          "chamasombra",
+          "repetidor",
+          "repetidor",
+          "besta leve"
+        ]
+      }
+    }
+  ]
+}

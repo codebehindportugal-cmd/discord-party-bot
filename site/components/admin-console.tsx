@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { Database, RefreshCw } from "lucide-react";
 import { Badge, StatCard } from "@/components/ui";
 
 type PlanName = "FREE" | "PRO" | "PREMIUM";
@@ -60,6 +60,7 @@ export function AdminConsole({
   const [classEmoji, setClassEmoji] = useState("⚔️");
   const [message, setMessage] = useState("");
   const [syncingServers, setSyncingServers] = useState(false);
+  const [importingLegacy, setImportingLegacy] = useState(false);
 
   const mrr = useMemo(() => {
     const prices: Record<string, number> = { FREE: 0, PRO: 9, PREMIUM: 19 };
@@ -97,6 +98,31 @@ export function AdminConsole({
       setMessage("Nao foi possivel sincronizar servidores.");
     } finally {
       setSyncingServers(false);
+    }
+  }
+
+  async function importLegacy() {
+    setImportingLegacy(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/import-legacy-games", {
+        method: "POST"
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setMessage(payload.error || "Nao foi possivel importar jogos/classes antigos.");
+        return;
+      }
+
+      setGames(payload.games || []);
+      setSelectedGameId((current) => current || payload.games?.[0]?.id || "");
+      setMessage(`Importacao concluida. Jogos no ficheiro: ${payload.totalGames}. Classes importadas: ${payload.classesImported}.`);
+    } catch (error) {
+      setMessage("Nao foi possivel importar jogos/classes antigos.");
+    } finally {
+      setImportingLegacy(false);
     }
   }
 
@@ -189,6 +215,15 @@ export function AdminConsole({
           >
             <RefreshCw className={`mr-2 ${syncingServers ? "animate-spin" : ""}`} size={16} />
             {syncingServers ? "A sincronizar" : "Sincronizar servidores"}
+          </button>
+          <button
+            type="button"
+            onClick={importLegacy}
+            disabled={importingLegacy}
+            className="inline-flex min-h-10 items-center justify-center rounded-md border border-border bg-panelSoft px-4 text-sm font-semibold text-white hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Database className="mr-2" size={16} />
+            {importingLegacy ? "A importar" : "Importar jogos antigos"}
           </button>
           {showDevAccessWarning ? <Badge tone="warning">SUPER_ADMIN_EMAILS vazio</Badge> : <Badge tone="success">Acesso restrito</Badge>}
         </div>
