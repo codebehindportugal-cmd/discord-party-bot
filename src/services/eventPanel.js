@@ -10,8 +10,9 @@ const { isAdmin } = require('../utils/permissions');
 
 function groupSlots(slots) {
   return slots.reduce((groups, slot) => {
-    groups[slot.party] = groups[slot.party] || [];
-    groups[slot.party].push(slot);
+    const party = slot.party || 'Party';
+    groups[party] = groups[party] || [];
+    groups[party].push(slot);
     return groups;
   }, {});
 }
@@ -26,74 +27,103 @@ function formatDate(date) {
   });
 }
 
-function remainingText(date) {
-  const diff = new Date(date).getTime() - Date.now();
-  if (diff <= 0) return 'já começou';
+function getDurationMinutes(event) {
+  if (!event.scheduledAt || !event.endedAt) return null;
+  return Math.max(0, Math.round((new Date(event.endedAt).getTime() - new Date(event.scheduledAt).getTime()) / 60000));
+}
+
+function remainingText(event) {
+  if (event.status === 'IN_PROGRESS') return 'Evento ja comecou';
+  if (event.status === 'CALCULATING' || event.status === 'COMPLETED') return 'Evento terminado';
+  if (event.status === 'CANCELLED') return 'Evento cancelado';
+
+  const diff = new Date(event.scheduledAt).getTime() - Date.now();
+  if (diff <= 0) return 'Evento ja comecou';
+
   const minutes = Math.floor(diff / 60000);
   const days = Math.floor(minutes / 1440);
   const hours = Math.floor((minutes % 1440) / 60);
   const mins = minutes % 60;
-  return `${days}d ${hours}h ${mins}m`;
+
+  if (days > 0) return `${days}d ${hours}h ${mins}m`;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+}
+
+function statusMeta(status) {
+  if (status === 'CANCELLED') return { label: 'Cancelado', icon: '❌', color: COLORS.error };
+  if (status === 'CALCULATING') return { label: 'A calcular loot', icon: '🧮', color: COLORS.warning };
+  if (status === 'COMPLETED') return { label: 'Terminado', icon: '✅', color: COLORS.success };
+  if (status === 'IN_PROGRESS') return { label: 'A decorrer', icon: '⌛', color: COLORS.warning };
+  return { label: 'Aberto', icon: '🟢', color: COLORS.success };
+}
+
+function slotStatus(slot) {
+  return slot.player ? `❌ <@${slot.player.discordId}>` : '🟢';
 }
 
 function legacyEventEmbed(event) {
-  const status = event.status === 'CANCELLED'
-    ? { label: 'Cancelado', color: COLORS.error }
-    : event.status === 'CALCULATING' || event.status === 'COMPLETED'
-      ? { label: 'Terminado', color: COLORS.error }
-      : event.status === 'IN_PROGRESS'
-        ? { label: 'Ativo', color: COLORS.warning }
-        : { label: 'Preparado', color: COLORS.success };
+  const status = statusMeta(event.status);
+  const duration = getDurationMinutes(event);
+  const grouped = groupSlots(event.slots || []);
 
   const embed = new EmbedBuilder()
     .setColor(status.color)
-    .setTitle(`${event.game?.emoji || '🎮'} ${event.name} - ${event.game?.name || 'Evento'}`)
+    .setTitle(`📅 Evento: ${event.name} (${event.game?.name || 'Jogo'})`)
     .setDescription([
-      `**Status:** ${status.label}`,
-      `🕒 Início: \`${formatDate(event.scheduledAt)}\``,
-      `⏳ Tempo restante: \`${remainingText(event.scheduledAt)}\``,
+      `**Status:** ${status.icon} ${status.label}`,
+      `🕒 Inicio: \`${formatDate(event.scheduledAt)}\``,
+      `⏳ Tempo restante: \`${remainingText(event)}\``,
+      duration !== null ? `⏱️ Duracao: ${duration} minutos` : null,
+      event.voiceChannelId ? `🎧 Canal de voz: <#${event.voiceChannelId}>` : '🎧 Canal de voz: Sem canal de voz',
       event.description ? `📝 ${event.description}` : null,
-      event.voiceChannelId ? `🎧 Canal de voz: <#${event.voiceChannelId}>` : '🎧 Canal de voz: sem canal de voz',
     ].filter(Boolean).join('\n'));
 
-  const grouped = groupSlots(event.slots || []);
   for (const [party, slots] of Object.entries(grouped)) {
-    const lines = ['`#` | Função | Estado'];
+    const lines = ['`Slot` | Funcao | Status'];
     for (const slot of slots.sort((a, b) => a.position - b.position)) {
-      lines.push(`\`${slot.position}\` | ${slot.label} | ${slot.player ? `❌ <@${slot.player.discordId}>` : '🟢'}`);
+      lines.push(`\`${slot.position}\` | ${slot.label} | ${slotStatus(slot)}`);
     }
-    embed.addFields({ name: `Party: ${party}`, value: lines.join('\n').slice(0, 1024), inline: true });
+
+    embed.addFields({
+      name: `👥 ${party}`,
+      value: lines.join('\n').slice(0, 1024),
+      inline: true,
+    });
   }
 
-  if (!event.slots?.length) {
-    embed.addFields({ name: 'Slots', value: 'Sem classes configuradas para este jogo.', inline: false });
+  if (!Object.keys(grouped).length) {
+    embed.addFields({
+      name: '👥 Parties',
+      value: 'Sem slots configurados. Importa/cria classes para este jogo.',
+      inline: false,
+    });
   }
 
-  embed.setFooter({ text: `ID: ${event.id}` }).setTimestamp();
-  return embed;
+  return embed.setFooter({ text: `ID: ${event.id}` }).setTimestamp();
 }
 
 function legacyEventComponents(event) {
-  const rows = [
+  const joinDisabled = event.status !== 'OPEN';
+  return [
     new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`plb:event_join:${event.id}`).setLabel('Participar').setStyle(ButtonStyle.Success),
-      new ButtonBuilder().setCustomId(`plb:event_leave:${event.id}`).setLabel('Sair do Evento').setStyle(ButtonStyle.Danger),
+      new ButtonBuilder()
+        .setCustomId(`plb:event_join:${event.id}`)
+        .setLabel('Entrar no Evento')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(joinDisabled),
+      new ButtonBuilder()
+        .setCustomId(`plb:event_leave:${event.id}`)
+        .setLabel('Sair do Evento')
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(joinDisabled),
+      new ButtonBuilder()
+        .setCustomId(`plb:event_close:${event.id}`)
+        .setLabel('Encerrar Evento')
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(event.status === 'CALCULATING' || event.status === 'COMPLETED' || event.status === 'CANCELLED'),
     ),
   ];
-
-  if (event.status === 'OPEN') {
-    rows.push(new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`plb:event_cancel:${event.id}`).setLabel('Cancelar Evento').setStyle(ButtonStyle.Secondary),
-    ));
-  }
-
-  if (event.status === 'IN_PROGRESS') {
-    rows.push(new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`plb:event_close:${event.id}`).setLabel('Encerrar Evento').setStyle(ButtonStyle.Danger),
-    ));
-  }
-
-  return rows;
 }
 
 async function createSlotsFromClasses(prisma, eventId, gameId) {
@@ -104,9 +134,10 @@ async function createSlotsFromClasses(prisma, eventId, gameId) {
 
   const counters = {};
   for (const classRow of classes) {
-    const party = classRow.party || 'Team';
+    const party = classRow.party || 'Party 1';
     counters[party] = counters[party] || 0;
     counters[party] += 1;
+
     await prisma.eventSlot.create({
       data: {
         eventId,
@@ -133,7 +164,7 @@ async function updateEventMessage(client, guild, eventId) {
   const event = await getEvent(client.prisma, eventId, guild.id);
   if (!event?.server?.eventsChanId || !event.announceMessageId) return event;
 
-  const channel = guild.channels.cache.get(event.server.eventsChanId);
+  const channel = guild.channels.cache.get(event.server.eventsChanId) || guild.channels.cache.get(event.server.announceChanId);
   if (!channel) return event;
 
   const message = await channel.messages.fetch(event.announceMessageId).catch(() => null);
@@ -163,12 +194,12 @@ async function publishLegacyEvent(client, guild, eventId) {
 async function showPartySelect(interaction, client, eventId) {
   const event = await getEvent(client.prisma, eventId, interaction.guild.id);
   if (!event || event.status !== 'OPEN') {
-    return interaction.reply({ embeds: [errorEmbed('Evento indisponível', 'Este evento não está aberto para inscrições.')], ephemeral: true });
+    return interaction.reply({ embeds: [errorEmbed('Evento indisponivel', 'Este evento nao esta aberto para inscricoes.')], ephemeral: true });
   }
 
   const parties = [...new Set(event.slots.map((slot) => slot.party))].slice(0, 25);
   if (!parties.length) {
-    return interaction.reply({ embeds: [warningEmbed('Sem slots', 'Este evento não tem classes configuradas.')], ephemeral: true });
+    return interaction.reply({ embeds: [warningEmbed('Sem slots', 'Este evento nao tem classes configuradas.')], ephemeral: true });
   }
 
   return interaction.reply({
@@ -188,17 +219,17 @@ async function showPartySelect(interaction, client, eventId) {
 async function showSlotSelect(interaction, client, eventId, party) {
   const event = await getEvent(client.prisma, eventId, interaction.guild.id);
   if (!event || event.status !== 'OPEN') {
-    return interaction.update({ content: 'Este evento já não está aberto.', components: [] });
+    return interaction.update({ content: 'Este evento ja nao esta aberto.', components: [] });
   }
 
   const slots = event.slots.filter((slot) => slot.party === party).slice(0, 25);
   return interaction.update({
-    content: `Escolhe função na ${party}:`,
+    content: `Escolhe funcao na ${party}:`,
     components: [
       new ActionRowBuilder().addComponents(
         new StringSelectMenuBuilder()
           .setCustomId(`plb:event_slot:${event.id}`)
-          .setPlaceholder(`Escolhe função na ${party}`)
+          .setPlaceholder(`Escolhe funcao na ${party}`)
           .addOptions(slots.map((slot) => ({
             label: `${slot.position}. ${slot.label} ${slot.player ? '(ocupado)' : '(livre)'}`.slice(0, 100),
             value: slot.id,
@@ -212,11 +243,13 @@ async function joinSlot(interaction, client, eventId, slotId) {
   const prisma = client.prisma;
   const event = await getEvent(prisma, eventId, interaction.guild.id);
   const slot = event?.slots.find((item) => item.id === slotId);
+
   if (!event || !slot || event.status !== 'OPEN') {
-    return interaction.update({ content: 'Este slot já não está disponível.', components: [] });
+    return interaction.update({ content: 'Este slot ja nao esta disponivel.', components: [] });
   }
+
   if (slot.playerId) {
-    return interaction.update({ content: 'Esse slot já está ocupado. Escolhe outro.', components: [] });
+    return interaction.update({ content: 'Esse slot ja esta ocupado. Escolhe outro.', components: [] });
   }
 
   const player = await prisma.player.upsert({
@@ -249,19 +282,19 @@ async function joinSlot(interaction, client, eventId, slotId) {
   });
 
   await updateEventMessage(client, interaction.guild, event.id);
-  return interaction.update({ content: `Inscrição confirmada: ${slot.party} - ${slot.position}. ${slot.label}`, components: [] });
+  return interaction.update({ content: `Inscricao confirmada: ${slot.party} - ${slot.position}. ${slot.label}`, components: [] });
 }
 
 async function leaveEvent(interaction, client, eventId) {
   const prisma = client.prisma;
   const event = await getEvent(prisma, eventId, interaction.guild.id);
   if (!event || event.status !== 'OPEN') {
-    return interaction.reply({ embeds: [errorEmbed('Evento indisponível', 'Já não podes sair deste evento.')], ephemeral: true });
+    return interaction.reply({ embeds: [errorEmbed('Evento indisponivel', 'Ja nao podes sair deste evento.')], ephemeral: true });
   }
 
   const slot = event.slots.find((item) => item.player?.discordId === interaction.user.id);
   if (!slot) {
-    return interaction.reply({ embeds: [warningEmbed('Sem inscrição', 'Não estavas inscrito neste evento.')], ephemeral: true });
+    return interaction.reply({ embeds: [warningEmbed('Sem inscricao', 'Nao estavas inscrito neste evento.')], ephemeral: true });
   }
 
   await prisma.eventSlot.update({ where: { id: slot.id }, data: { playerId: null } });
@@ -270,14 +303,34 @@ async function leaveEvent(interaction, client, eventId) {
   }
 
   await updateEventMessage(client, interaction.guild, event.id);
-  return interaction.reply({ embeds: [successEmbed('Saíste do evento', `Slot libertado: ${slot.party} - ${slot.position}. ${slot.label}`)], ephemeral: true });
+  return interaction.reply({ embeds: [successEmbed('Saiste do evento', `Slot libertado: ${slot.party} - ${slot.position}. ${slot.label}`)], ephemeral: true });
+}
+
+async function closeEvent(interaction, client, eventId) {
+  const event = await getEvent(client.prisma, eventId, interaction.guild.id);
+  if (!event) return interaction.reply({ embeds: [errorEmbed('Evento nao encontrado', 'Nao encontrei esse evento.')], ephemeral: true });
+  if (!isAdmin(interaction.member)) {
+    return interaction.reply({ embeds: [errorEmbed('Sem permissao', 'Apenas administradores podem encerrar eventos.')], ephemeral: true });
+  }
+
+  await client.prisma.event.update({
+    where: { id: event.id },
+    data: {
+      status: 'CALCULATING',
+      endedAt: new Date(),
+      voiceChannelId: null,
+    },
+  });
+
+  await updateEventMessage(client, interaction.guild, event.id);
+  return interaction.reply({ embeds: [successEmbed('Evento encerrado', `**${event.name}** ficou fechado para calculo de loot.`)], ephemeral: true });
 }
 
 async function cancelEvent(interaction, client, eventId) {
   const event = await getEvent(client.prisma, eventId, interaction.guild.id);
-  if (!event) return interaction.reply({ embeds: [errorEmbed('Evento não encontrado', 'Não encontrei esse evento.')], ephemeral: true });
+  if (!event) return interaction.reply({ embeds: [errorEmbed('Evento nao encontrado', 'Nao encontrei esse evento.')], ephemeral: true });
   if (event.createdBy !== interaction.user.id && !isAdmin(interaction.member)) {
-    return interaction.reply({ embeds: [errorEmbed('Sem permissão', 'Apenas o criador ou um admin pode cancelar.')], ephemeral: true });
+    return interaction.reply({ embeds: [errorEmbed('Sem permissao', 'Apenas o criador ou um admin pode cancelar.')], ephemeral: true });
   }
 
   await client.prisma.event.update({ where: { id: event.id }, data: { status: 'CANCELLED' } });
@@ -296,5 +349,6 @@ module.exports = {
   showSlotSelect,
   joinSlot,
   leaveEvent,
+  closeEvent,
   cancelEvent,
 };

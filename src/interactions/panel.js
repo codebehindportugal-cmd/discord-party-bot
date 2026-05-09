@@ -20,6 +20,7 @@ const {
   showSlotSelect,
   joinSlot,
   leaveEvent,
+  closeEvent,
   cancelEvent,
 } = require('../services/eventPanel');
 
@@ -471,6 +472,7 @@ async function handlePanelInteraction(interaction, client) {
     if (interaction.customId.startsWith('plb:join_event:')) return joinEvent(interaction, client, interaction.customId.split(':')[2]);
     if (interaction.customId.startsWith('plb:event_join:')) return showPartySelect(interaction, client, interaction.customId.split(':')[2]);
     if (interaction.customId.startsWith('plb:event_leave:')) return leaveEvent(interaction, client, interaction.customId.split(':')[2]);
+    if (interaction.customId.startsWith('plb:event_close:')) return closeEvent(interaction, client, interaction.customId.split(':')[2]);
     if (interaction.customId.startsWith('plb:event_cancel:')) return cancelEvent(interaction, client, interaction.customId.split(':')[2]);
   }
 

@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { successEmbed, errorEmbed } = require('../../utils/embeds');
 const { isAdmin } = require('../../utils/permissions');
 const { freezeEventTimes, clearEvent } = require('../../services/voiceTracker');
+const { updateEventMessage } = require('../../services/eventPanel');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -38,6 +39,7 @@ module.exports = {
     await interaction.deferReply();
 
     const server = await prisma.server.findUnique({ where: { discordId: interaction.guildId } });
+    if (!server) return interaction.editReply({ embeds: [errorEmbed('Servidor nao configurado', 'Usa o painel de configuracao primeiro.')] });
     const eventId = interaction.options.getString('id');
 
     const event = await prisma.event.findFirst({
@@ -72,6 +74,7 @@ module.exports = {
         voiceChannelId: null,
       },
     });
+    await updateEventMessage(client, interaction.guild, event.id);
 
     // Limpar da memória
     clearEvent(client, eventId);

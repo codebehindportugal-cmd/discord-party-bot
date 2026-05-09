@@ -3,6 +3,7 @@ const { successEmbed, errorEmbed } = require('../../utils/embeds');
 const { isAdmin } = require('../../utils/permissions');
 const { initEvent } = require('../../services/voiceTracker');
 const { notifyEventStarting } = require('../../services/notificationService');
+const { updateEventMessage } = require('../../services/eventPanel');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -39,6 +40,7 @@ module.exports = {
     await interaction.deferReply();
 
     const server = await prisma.server.findUnique({ where: { discordId: interaction.guildId } });
+    if (!server) return interaction.editReply({ embeds: [errorEmbed('Servidor nao configurado', 'Usa o painel de configuracao primeiro.')] });
     const eventId = interaction.options.getString('id');
 
     const event = await prisma.event.findFirst({
@@ -100,6 +102,7 @@ module.exports = {
         voiceChannelId: voiceChannel.id,
       },
     });
+    await updateEventMessage(client, interaction.guild, event.id);
 
     // ─── Iniciar tracking em memória ──────────────────────────────────────────
     initEvent(client, event.id);

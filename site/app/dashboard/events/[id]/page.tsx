@@ -14,6 +14,14 @@ export default async function EventDetailPage({ params }: { params: { id: string
     include: {
       server: true,
       game: true,
+      slots: {
+        include: { player: { include: { class: true } } },
+        orderBy: [{ party: "asc" }, { position: "asc" }]
+      },
+      participants: {
+        include: { player: { include: { class: true } } },
+        orderBy: { joinedAt: "asc" }
+      },
       lootEntries: true,
       lootSplits: { include: { player: true } },
       voiceSessions: { include: { player: { include: { class: true } } }, orderBy: { joinedAt: "asc" } },
@@ -30,6 +38,12 @@ export default async function EventDetailPage({ params }: { params: { id: string
     player: split.player.username,
     percentage: split.percentage
   }));
+  const slotsByParty = event.slots.reduce<Record<string, typeof event.slots>>((groups, slot) => {
+    const party = slot.party || "Party";
+    groups[party] = groups[party] || [];
+    groups[party].push(slot);
+    return groups;
+  }, {});
 
   return (
     <DashboardShell serverName={event.server.name} plan={event.server.plan}>
@@ -43,13 +57,47 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         <StatCard label="Loot total" value={formatGold(lootTotal)} />
-        <StatCard label="Duração" value={duration ? formatMinutes(duration) : "Ainda sem fim"} />
+        <StatCard label="Duracao" value={duration ? formatMinutes(duration) : "Ainda sem fim"} />
         <StatCard label="Participantes" value={String(event._count.participants)} />
       </div>
 
+      <section className="mt-8 rounded-lg border border-border bg-panel p-5">
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="font-semibold text-white">Mapa do evento</h2>
+            <p className="mt-1 text-sm text-muted">Mesmas parties e slots publicados no Discord.</p>
+          </div>
+          <p className="text-sm text-slate-300">
+            {event.voiceChannelId ? `Canal de voz: ${event.voiceChannelId}` : "Sem canal de voz"}
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-4 xl:grid-cols-3">
+          {Object.entries(slotsByParty).map(([party, slots]) => (
+            <div key={party} className="rounded-md border border-white/10 bg-black/25 p-4">
+              <h3 className="text-sm font-semibold text-white">{party}</h3>
+              <div className="mt-3 space-y-2">
+                {slots.map((slot) => (
+                  <div key={slot.id} className="grid grid-cols-[2.5rem_1fr_auto] items-center gap-2 rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-sm">
+                    <span className="rounded bg-white/10 px-2 py-1 text-center text-xs text-slate-300">{slot.position}</span>
+                    <span className="text-slate-200">{slot.label}</span>
+                    {slot.player ? (
+                      <span className="text-right text-rose-200">{slot.player.username}</span>
+                    ) : (
+                      <span className="text-right text-emerald-300">Livre</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          {!event.slots.length ? <p className="text-sm text-muted">Sem slots configurados para este evento.</p> : null}
+        </div>
+      </section>
+
       <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="rounded-lg border border-border bg-panel p-5">
-          <h2 className="font-semibold text-white">Sessões de voice</h2>
+          <h2 className="font-semibold text-white">Sessoes de voice</h2>
           <div className="mt-6 space-y-4">
             {event.voiceSessions.map((session) => (
               <div key={session.id} className="rounded-md border border-border bg-panelSoft p-4">
@@ -62,12 +110,12 @@ export default async function EventDetailPage({ params }: { params: { id: string
                 </p>
               </div>
             ))}
-            {!event.voiceSessions.length ? <p className="text-sm text-muted">Sem sessões de voice registadas.</p> : null}
+            {!event.voiceSessions.length ? <p className="text-sm text-muted">Sem sessoes de voice registadas.</p> : null}
           </div>
         </section>
 
         <section className="rounded-lg border border-border bg-panel p-5">
-          <h2 className="font-semibold text-white">Divisão percentual</h2>
+          <h2 className="font-semibold text-white">Divisao percentual</h2>
           <div className="mt-5">
             {splitRows.length ? <SplitPieChart data={splitRows} /> : <p className="text-sm text-muted">Sem split calculado ainda.</p>}
           </div>
@@ -80,7 +128,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
             <tr>
               <th className="p-4">Jogador</th>
               <th className="p-4">Tempo total</th>
-              <th className="p-4">% participação</th>
+              <th className="p-4">% participacao</th>
               <th className="p-4">Valor recebido</th>
             </tr>
           </thead>
