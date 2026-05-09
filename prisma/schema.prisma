@@ -1,0 +1,286 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Server {
+  id             String   @id @default(cuid())
+  discordId      String   @unique
+  name           String
+  plan           Plan     @default(FREE)
+  subscriptionId String?
+  planExpiresAt  DateTime?
+
+  // Canais configurados
+  announceChanId String?
+  logsChanId     String?
+  eventsChanId   String?
+  voiceCategoryId String?
+
+  // Configurações
+  currency       String   @default("Gold")
+  currencySymbol String   @default("G")
+  language       String   @default("PT")
+  minTimeMinutes Int      @default(0)
+  roleBonus      Json?    // { "tank": 1.2, "heal": 1.2, "dps": 1.0 }
+  maxPercentage  Float?   // Cap máximo de % por jogador
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  games   Game[]
+  players Player[]
+  events  Event[]
+  features ServerFeature[]
+}
+
+enum Plan {
+  FREE
+  PRO
+  PREMIUM
+}
+
+model Game {
+  id       String  @id @default(cuid())
+  name     String
+  imageUrl String?
+  emoji    String  @default("🎮")
+  active   Boolean @default(true)
+  isGlobal Boolean @default(false) // jogos base da plataforma
+
+  serverId String?
+  server   Server? @relation(fields: [serverId], references: [id])
+
+  classes  Class[]
+  players  Player[]
+  events   Event[]
+
+  createdAt DateTime @default(now())
+}
+
+model Class {
+  id   String    @id @default(cuid())
+  name String
+  role ClassRole @default(DPS)
+  emoji String   @default("⚔️")
+  party String?
+  position Int?
+
+  gameId String
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  players Player[]
+
+  createdAt DateTime @default(now())
+}
+
+enum ClassRole {
+  TANK
+  HEAL
+  DPS
+  SUPPORT
+}
+
+model Player {
+  id       String @id @default(cuid())
+  discordId String
+  username  String
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id])
+
+  gameId String
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  classId String?
+  class   Class?  @relation(fields: [classId], references: [id])
+
+  totalEarnings Float @default(0)
+  totalMinutes  Int   @default(0)
+  eventsCount   Int   @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants  EventParticipant[]
+  voiceSessions VoiceSession[]
+  lootSplits    LootSplit[]
+  eventSlots     EventSlot[]
+
+  @@unique([discordId, serverId, gameId])
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  lootType    LootType    @default(TIME_BASED)
+  status      EventStatus @default(OPEN)
+  scheduledAt DateTime
+  startedAt   DateTime?
+  endedAt     DateTime?
+  maxSlots    Int         @default(10)
+
+  // Canal de voz criado para o evento
+  voiceChannelId String?
+  // Mensagem do anúncio para editar depois
+  announceMessageId String?
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id])
+
+  gameId String
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  createdBy String // discordId do criador
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants  EventParticipant[]
+  lootEntries   LootEntry[]
+  lootSplits    LootSplit[]
+  voiceSessions VoiceSession[]
+  slots          EventSlot[]
+}
+
+model EventSlot {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  party     String
+  position  Int
+  label     String
+  playerId  String?
+  player    Player?  @relation(fields: [playerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, party, position])
+}
+
+enum LootType {
+  TIME_BASED
+  EQUAL
+  LOOT_COUNCIL
+}
+
+enum EventStatus {
+  OPEN
+  IN_PROGRESS
+  CALCULATING
+  COMPLETED
+  CANCELLED
+}
+
+model EventParticipant {
+  id        String              @id @default(cuid())
+  status    ParticipantStatus   @default(CONFIRMED)
+  joinedAt  DateTime            @default(now())
+
+  eventId   String
+  event     Event  @relation(fields: [eventId], references: [id])
+
+  playerId  String
+  player    Player @relation(fields: [playerId], references: [id])
+
+  @@unique([eventId, playerId])
+}
+
+enum ParticipantStatus {
+  CONFIRMED
+  LEFT
+  ABSENT
+}
+
+model VoiceSession {
+  id              String    @id @default(cuid())
+  joinedAt        DateTime  @default(now())
+  leftAt          DateTime?
+  durationMinutes Float     @default(0)
+  isCrash         Boolean   @default(false) // reconexão rápida
+
+  eventId  String
+  event    Event  @relation(fields: [eventId], references: [id])
+
+  playerId String
+  player   Player @relation(fields: [playerId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model LootEntry {
+  id       String    @id @default(cuid())
+  type     LootEntryType @default(GOLD)
+  name     String?   // nome do item
+  value    Float
+  currency String    @default("Gold")
+
+  eventId  String
+  event    Event  @relation(fields: [eventId], references: [id])
+
+  assignedTo String? // discordId (para loot council)
+
+  createdAt DateTime @default(now())
+}
+
+enum LootEntryType {
+  GOLD
+  ITEM
+}
+
+model LootSplit {
+  id         String @id @default(cuid())
+  amount     Float
+  percentage Float
+  minutes    Float
+  confirmed  Boolean  @default(false)
+  confirmedAt DateTime?
+
+  eventId  String
+  event    Event  @relation(fields: [eventId], references: [id])
+
+  playerId String
+  player   Player @relation(fields: [playerId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, playerId])
+}
+
+model AuditLog {
+  id       String @id @default(cuid())
+  serverId String
+  userId   String
+  action   String
+  metadata Json?
+
+  createdAt DateTime @default(now())
+}
+
+model ServerFeature {
+  id        String   @id @default(cuid())
+  serverId  String
+  server    Server   @relation(fields: [serverId], references: [id])
+  key       String
+  enabled   Boolean  @default(false)
+  config    Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([serverId, key])
+}
+
+model AntiSpamStrike {
+  id        String   @id @default(cuid())
+  serverId  String
+  discordId String
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([serverId, discordId])
+}

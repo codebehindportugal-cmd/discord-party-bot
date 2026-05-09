@@ -1,0 +1,356 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SiteUser {
+  id           String   @id @default(cuid())
+  name         String?
+  email        String   @unique
+  passwordHash String
+  role         SiteRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Server {
+  id             String    @id @default(cuid())
+  discordId      String    @unique
+  name           String
+  plan           Plan      @default(FREE)
+  subscriptionId String?
+  planExpiresAt  DateTime?
+  customerId     String?
+
+  announceChanId   String?
+  logsChanId       String?
+  eventsChanId     String?
+  voiceCategoryId  String?
+  currency         String   @default("Gold")
+  currencySymbol   String   @default("G")
+  language         String   @default("PT")
+  minTimeMinutes   Int      @default(0)
+  roleBonus        Json?
+  maxPercentage    Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  games         Game[]
+  players       Player[]
+  events        Event[]
+  subscriptions Subscription[]
+  invoices      Invoice[]
+  auditLogs     AuditLog[]
+  features      ServerFeature[]
+}
+
+model SubscriptionPlan {
+  id             String   @id @default(cuid())
+  name           Plan     @unique
+  maxEvents      Int
+  maxPlayers     Int
+  maxGames       Int
+  priceMonthly   Int
+  stripePriceId  String?
+  createdAt      DateTime @default(now())
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id               String             @id @default(cuid())
+  serverId         String
+  server           Server             @relation(fields: [serverId], references: [id])
+  planId           String
+  plan             SubscriptionPlan   @relation(fields: [planId], references: [id])
+  stripeSubId      String?            @unique
+  paymentMethod    PaymentMethod      @default(MANUAL)
+  paymentReference String?
+  status           SubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model Invoice {
+  id              String    @id @default(cuid())
+  serverId        String
+  server          Server    @relation(fields: [serverId], references: [id])
+  amount          Int
+  currency        String    @default("EUR")
+  paymentMethod   PaymentMethod @default(MANUAL)
+  paymentReference String?
+  paidAt          DateTime?
+  stripeInvoiceId String?   @unique
+  createdAt       DateTime  @default(now())
+}
+
+model Game {
+  id       String  @id @default(cuid())
+  name     String
+  imageUrl String?
+  emoji    String  @default("🎮")
+  active   Boolean @default(true)
+  isGlobal Boolean @default(false)
+
+  serverId String?
+  server   Server? @relation(fields: [serverId], references: [id])
+
+  classes Class[]
+  players Player[]
+  events  Event[]
+
+  createdAt DateTime @default(now())
+}
+
+model Class {
+  id    String    @id @default(cuid())
+  name  String
+  role  ClassRole @default(DPS)
+  color String?
+  emoji String    @default("⚔️")
+  party String?
+  position Int?
+
+  gameId String
+  game   Game @relation(fields: [gameId], references: [id])
+
+  players Player[]
+
+  createdAt DateTime @default(now())
+}
+
+model Player {
+  id            String @id @default(cuid())
+  discordId     String
+  username      String
+  totalEarnings Float  @default(0)
+  totalMinutes  Int    @default(0)
+  eventsCount   Int    @default(0)
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id])
+
+  gameId String
+  game   Game @relation(fields: [gameId], references: [id])
+
+  classId String?
+  class   Class? @relation(fields: [classId], references: [id])
+
+  participants  EventParticipant[]
+  voiceSessions VoiceSession[]
+  lootSplits    LootSplit[]
+  eventSlots     EventSlot[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([discordId, serverId, gameId])
+}
+
+model Event {
+  id                String      @id @default(cuid())
+  discordMessageId  String?
+  name              String
+  description       String?
+  lootType          LootType    @default(TIME_BASED)
+  status            EventStatus @default(OPEN)
+  scheduledAt       DateTime
+  startedAt         DateTime?
+  endedAt           DateTime?
+  maxSlots          Int         @default(10)
+  voiceChannelId    String?
+  announceMessageId String?
+  createdBy         String
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id])
+
+  gameId String
+  game   Game @relation(fields: [gameId], references: [id])
+
+  participants  EventParticipant[]
+  lootEntries   LootEntry[]
+  lootSplits    LootSplit[]
+  voiceSessions VoiceSession[]
+  slots          EventSlot[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EventSlot {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  party     String
+  position  Int
+  label     String
+  playerId  String?
+  player    Player?  @relation(fields: [playerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, party, position])
+}
+
+model EventParticipant {
+  id       String            @id @default(cuid())
+  status   ParticipantStatus @default(CONFIRMED)
+  joinedAt DateTime          @default(now())
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id])
+
+  playerId String
+  player   Player @relation(fields: [playerId], references: [id])
+
+  @@unique([eventId, playerId])
+}
+
+model VoiceSession {
+  id              String    @id @default(cuid())
+  joinedAt        DateTime  @default(now())
+  leftAt          DateTime?
+  durationMinutes Float     @default(0)
+  isCrash         Boolean   @default(false)
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id])
+
+  playerId String
+  player   Player @relation(fields: [playerId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model LootEntry {
+  id         String        @id @default(cuid())
+  type       LootEntryType @default(GOLD)
+  name       String?
+  value      Float
+  currency   String        @default("Gold")
+  assignedTo String?
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model LootSplit {
+  id          String    @id @default(cuid())
+  amount      Float
+  percentage  Float
+  minutes     Float
+  confirmed   Boolean   @default(false)
+  confirmedAt DateTime?
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id])
+
+  playerId String
+  player   Player @relation(fields: [playerId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, playerId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  serverId  String?
+  server    Server?  @relation(fields: [serverId], references: [id])
+  userId    String?
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model ServerFeature {
+  id        String   @id @default(cuid())
+  serverId  String
+  server    Server   @relation(fields: [serverId], references: [id])
+  key       String
+  enabled   Boolean  @default(false)
+  config    Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([serverId, key])
+}
+
+model AntiSpamStrike {
+  id        String   @id @default(cuid())
+  serverId  String
+  discordId String
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([serverId, discordId])
+}
+
+enum Plan {
+  FREE
+  PRO
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+}
+
+enum PaymentMethod {
+  MANUAL
+  CASH
+  PAYPAL
+  REVOLUT
+  STRIPE
+}
+
+enum ClassRole {
+  TANK
+  HEAL
+  DPS
+  SUPPORT
+}
+
+enum LootType {
+  TIME_BASED
+  EQUAL
+  LOOT_COUNCIL
+  DKP
+  PERCENTAGE_BASED
+}
+
+enum EventStatus {
+  OPEN
+  IN_PROGRESS
+  CALCULATING
+  COMPLETED
+  CANCELLED
+}
+
+enum ParticipantStatus {
+  CONFIRMED
+  LEFT
+  ABSENT
+}
+
+enum LootEntryType {
+  GOLD
+  ITEM
+}
+
+enum SiteRole {
+  USER
+  ADMIN
+}
