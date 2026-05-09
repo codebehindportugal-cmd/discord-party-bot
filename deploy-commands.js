@@ -3,8 +3,8 @@ const { REST, Routes } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
 
-const token = process.env.DISCORD_TOKEN;
-const clientId = process.env.DISCORD_CLIENT_ID;
+const token = process.env.DISCORD_TOKEN?.trim();
+const clientId = process.env.DISCORD_CLIENT_ID?.trim();
 
 if (!token || !clientId) {
   console.error("DISCORD_TOKEN e DISCORD_CLIENT_ID sao obrigatorios no .env ou nas variaveis do Plesk.");

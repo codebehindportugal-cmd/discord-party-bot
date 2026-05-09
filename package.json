@@ -7,6 +7,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "deploy-commands": "node deploy-commands.js",
+    "discord:check": "node scripts/check-discord-token.js",
     "sync-guilds": "node scripts/sync-guilds.js",
     "publish-panels": "node scripts/publish-panels.js",
     "seed-old-classes": "node scripts/seed-old-classes.js",
