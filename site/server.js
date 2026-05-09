@@ -32,6 +32,6 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
   }).listen(port, hostname, () => {
-    console.log(`Party Loot Site running on http://${hostname}:${port}`);
+    console.log(`MordsFocas Site running on http://${hostname}:${port}`);
   });
 });

@@ -24,11 +24,13 @@ const {
 } = require('../services/eventPanel');
 
 const DEFAULT_LANGUAGE = (process.env.DEFAULT_LANGUAGE || 'pt').toUpperCase();
+const BOT_NAME = process.env.BOT_NAME || 'MordsFocas';
+const BOT_LOGO_URL = process.env.BOT_LOGO_URL || null;
 
 function panelEmbed() {
-  return new EmbedBuilder()
+  const embed = new EmbedBuilder()
     .setColor(COLORS.info)
-    .setTitle('Party Loot Bot')
+    .setTitle(BOT_NAME)
     .setDescription('Painel rápido para gerir eventos, jogadores, jogos e configuração do bot.')
     .addFields(
       { name: 'Jogadores', value: 'Usa **Registar** para escolher jogo e classe sem escrever IDs.', inline: true },
@@ -37,6 +39,9 @@ function panelEmbed() {
     )
     .setFooter({ text: 'Os /comandos continuam disponíveis para utilizadores avançados.' })
     .setTimestamp();
+
+  if (BOT_LOGO_URL) embed.setThumbnail(BOT_LOGO_URL);
+  return embed;
 }
 
 function panelComponents() {

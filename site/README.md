@@ -1,6 +1,6 @@
-# Party Loot Site
+# MordsFocas Site
 
-Site de gestao para o Discord Party Loot Bot.
+Site de gestao para o Discord MordsFocas.
 
 ## Stack
 

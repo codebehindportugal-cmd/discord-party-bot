@@ -22,14 +22,14 @@ module.exports = {
     });
 
     let panelChannel = guild.channels.cache.find(
-      c => c.name === 'party-loot-bot' && c.type === ChannelType.GuildText
+      c => c.name === 'mordsfocas' && c.type === ChannelType.GuildText
     );
 
     if (!panelChannel && guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels)) {
       panelChannel = await guild.channels.create({
-        name: 'party-loot-bot',
+        name: 'mordsfocas',
         type: ChannelType.GuildText,
-        reason: 'Canal de painel do Party Loot Bot',
+        reason: 'Canal de painel do MordsFocas',
       }).catch(() => null);
     }
 

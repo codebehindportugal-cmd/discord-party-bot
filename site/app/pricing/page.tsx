@@ -7,16 +7,20 @@ export default function PricingPage() {
     <div>
       <SiteNav />
       <main className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-        <SectionTitle title="Preços" text="Planos mensais para cada tamanho de servidor Discord." />
+        <SectionTitle
+          title="Planos MordsFocas"
+          text="Cada subscricao permite usar o bot oficial num servidor Discord e acompanhar os dados desse servidor no dashboard."
+        />
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {plans.map((plan) => (
-            <div key={plan.name} className={`rounded-lg border p-6 ${plan.highlight ? "border-discord bg-discord/10" : "border-border bg-panel"}`}>
+            <div key={plan.name} className={`game-card rounded-lg border p-6 ${plan.highlight ? "border-discord bg-discord/10" : "border-border bg-panel"}`}>
               <h2 className="text-xl font-semibold text-white">{plan.name}</h2>
-              <p className="mt-4 text-4xl font-semibold">{plan.price}€<span className="text-base text-muted">/mês</span></p>
+              <p className="mt-4 text-4xl font-semibold">{plan.price} EUR<span className="text-base text-muted">/mes</span></p>
               <div className="mt-6 space-y-3 text-sm text-slate-300">
                 <p>{plan.events}</p>
                 <p>{plan.players}</p>
                 <p>{plan.games}</p>
+                <p>Dashboard para o servidor instalado</p>
               </div>
               <div className="mt-8">
                 <ButtonLink href="/dashboard/billing" variant={plan.highlight ? "primary" : "secondary"}>Escolher plano</ButtonLink>

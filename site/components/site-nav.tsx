@@ -20,7 +20,7 @@ export function SiteNav() {
           <span className="relative flex h-10 w-10 overflow-hidden rounded-md border border-white/10 bg-panelSoft shadow-glow">
             <BrandLogo />
           </span>
-          MordFocas
+          MordsFocas
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-slate-300 md:flex">
           {nav.map((item) => (

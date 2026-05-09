@@ -57,7 +57,7 @@ module.exports = {
     const durationSeconds = getDuration(config, strike.count);
 
     await message.delete().catch(() => {});
-    await member.timeout(durationSeconds * 1000, 'Spam detetado pelo Party Loot Bot').catch(() => {});
+    await member.timeout(durationSeconds * 1000, 'Spam detetado pelo MordsFocas').catch(() => {});
 
     const warning = await message.channel.send({
       content: `${message.author}, evita enviar muitas mensagens seguidas. Silenciado por ${Math.round(durationSeconds / 60)} minutos.`,

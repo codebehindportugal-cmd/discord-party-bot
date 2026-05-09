@@ -15,7 +15,7 @@ export default function DocsPage() {
     <div>
       <SiteNav />
       <main className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-        <SectionTitle title="Comandos MordFocas" text="Guia rapido para administradores ligarem o bot ao fluxo de eventos." />
+        <SectionTitle title="Comandos MordsFocas" text="Guia rapido para administradores ligarem o bot ao fluxo de eventos." />
         <div className="mt-10 overflow-hidden rounded-lg border border-border">
           <table className="w-full border-collapse bg-panel text-left text-sm">
             <thead className="bg-panelSoft text-slate-300">

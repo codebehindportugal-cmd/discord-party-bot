@@ -10,16 +10,16 @@ async function main() {
 
     for (const guild of client.guilds.cache.values()) {
       let panelChannel = guild.channels.cache.find(
-        c => c.name === 'party-loot-bot' && c.type === ChannelType.GuildText
+        c => c.name === 'mordsfocas' && c.type === ChannelType.GuildText
       );
 
       if (!panelChannel && guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels)) {
         panelChannel = await guild.channels.create({
-          name: 'party-loot-bot',
+          name: 'mordsfocas',
           type: ChannelType.GuildText,
-          reason: 'Canal de painel do Party Loot Bot',
+          reason: 'Canal de painel do MordsFocas',
         }).catch(() => null);
-      } 
+      }
 
       const fallbackChannel = guild.systemChannel || guild.channels.cache.find(
         c => c.isTextBased() && c.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)
@@ -27,7 +27,7 @@ async function main() {
 
       const targetChannel = panelChannel || fallbackChannel;
       if (!targetChannel) {
-        console.log(`${guild.name}: sem canal com permissão para enviar mensagem`);
+        console.log(`${guild.name}: sem canal com permissao para enviar mensagem`);
         continue;
       }
 

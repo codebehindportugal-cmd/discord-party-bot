@@ -20,9 +20,9 @@ export default function HomePage() {
           <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-12 px-4 py-14 md:px-6 lg:grid-cols-[0.95fr_1.05fr]">
             <div>
               <Badge tone="discord">Bot de raid e loot</Badge>
-              <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-tight text-white md:text-7xl">MordFocas</h1>
+              <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-tight text-white md:text-7xl">MordsFocas</h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-                O bot para servidores que querem eventos afiados, tracking de voz e divisao de loot sem folhas perdidas nem contas feitas a pressa.
+                Compra uma subscricao, adiciona o bot oficial ao servidor que quiseres e acompanha eventos, jogadores e loot no dashboard.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <ButtonLink href="/install">Instalar bot</ButtonLink>
@@ -30,10 +30,11 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="depth-stage min-h-[560px] rounded-lg border border-white/10 p-6 shadow-glow md:p-10">
+            <div className="depth-stage holo-panel min-h-[560px] rounded-lg border border-white/10 p-6 shadow-glow md:p-10">
+              <div className="energy-ring" />
               <div className="relative z-10 grid min-h-[500px] content-between">
                 <div className="logo-orbit mx-auto mt-4 aspect-square w-full max-w-[430px] overflow-hidden rounded-lg border border-white/15 bg-black/40 shadow-2xl">
-                  <BrandLogo className="h-full w-full text-6xl" alt="Logo MordFocas" />
+                  <BrandLogo className="h-full w-full text-6xl" alt="Logo MordsFocas" />
                 </div>
 
                 <div className="logo-orbit mx-auto mt-8 w-full max-w-xl rounded-lg border border-white/10 bg-black/45 p-4 backdrop-blur">
@@ -63,10 +64,10 @@ export default function HomePage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 py-20 md:px-6">
-          <SectionTitle eyebrow="Sistema" title="Um bot com presenca propria" text="MordFocas liga o servidor, os eventos e o dashboard numa experiencia mais visual, rapida e facil de auditar." />
+          <SectionTitle eyebrow="Sistema" title="Um bot com presenca propria" text="MordsFocas liga o servidor, os eventos e o dashboard numa experiencia mais visual, rapida e facil de auditar." />
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
-              <div key={feature.title} className="rounded-lg border border-border bg-panel p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+              <div key={feature.title} className="game-card rounded-lg border border-border bg-panel p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
                 <feature.icon className="text-discord" size={24} />
                 <h3 className="mt-5 font-semibold text-white">{feature.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-400">{feature.text}</p>
@@ -98,8 +99,8 @@ export default function HomePage() {
           <div className="rounded-lg border border-border bg-panel p-8 md:flex md:items-center md:justify-between">
             <div>
               <ShieldCheck className="text-success" />
-              <h2 className="mt-4 text-2xl font-semibold text-white">Instalacao guiada</h2>
-              <p className="mt-2 max-w-2xl text-slate-300">Liga o bot ao Discord, configura os canais e publica os comandos slash em poucos passos.</p>
+              <h2 className="mt-4 text-2xl font-semibold text-white">Instalacao do bot oficial</h2>
+              <p className="mt-2 max-w-2xl text-slate-300">Convida o MordsFocas para o teu servidor, escolhe o plano e comeca a ver os dados no dashboard.</p>
             </div>
             <div className="mt-6 md:mt-0">
               <ButtonLink href="/install">

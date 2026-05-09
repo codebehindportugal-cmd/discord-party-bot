@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { COLORS } = require('../../utils/embeds');
+const BOT_LOGO_URL = process.env.BOT_LOGO_URL || null;
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,7 +10,7 @@ module.exports = {
   async execute(interaction) {
     const embed = new EmbedBuilder()
       .setColor(COLORS.info)
-      .setTitle('Comandos do Party Loot Bot')
+      .setTitle('Comandos do MordsFocas')
       .setDescription('Podes usar estes comandos ou o painel com botões.')
       .addFields(
         { name: 'Jogadores', value: '`/registar` - escolher jogo e classe\n`/perfil` - ver estatísticas' },
@@ -20,6 +21,8 @@ module.exports = {
         { name: 'Módulos extra', value: '`/albion jogador`, `/albion guilda`, `/albion mortes`, `/albion kills`, `/albion batalha`' },
       )
       .setTimestamp();
+
+    if (BOT_LOGO_URL) embed.setThumbnail(BOT_LOGO_URL);
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
   },

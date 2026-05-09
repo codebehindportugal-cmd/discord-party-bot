@@ -4,8 +4,8 @@ import { SiteNav } from "@/components/site-nav";
 import { Badge, SectionTitle } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Politica de Cookies | Party Loot Bot",
-  description: "Informacao sobre cookies e tecnologias semelhantes usadas pelo Party Loot Bot."
+  title: "Politica de Cookies | MordsFocas",
+  description: "Informacao sobre cookies e tecnologias semelhantes usadas pelo MordsFocas."
 };
 
 const sections = [
@@ -60,7 +60,7 @@ export default function CookiesPage() {
         <Badge tone="discord">Legal</Badge>
         <SectionTitle
           title="Politica de Cookies"
-          text="Como o Party Loot Bot usa cookies e tecnologias semelhantes no site e no dashboard."
+          text="Como o MordsFocas usa cookies e tecnologias semelhantes no site e no dashboard."
         />
         <p className="mt-4 text-sm text-muted">Ultima atualizacao: 9 de maio de 2026</p>
 

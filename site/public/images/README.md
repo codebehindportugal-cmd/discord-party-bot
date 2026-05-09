@@ -1,5 +1,5 @@
-Place the MordFocas logo image at:
+Place the MordsFocas logo image at:
 
-images/mordfocas-logo.png
+images/mordsfocas-logo.png
 
 The site header and homepage use that file as the main logo.

@@ -58,6 +58,7 @@ select {
     radial-gradient(circle at 24% 18%, rgba(216, 243, 240, 0.18), transparent 26%),
     radial-gradient(circle at 78% 16%, rgba(215, 25, 53, 0.22), transparent 28%),
     linear-gradient(145deg, #151d1f, #07090a 72%);
+  transform-style: preserve-3d;
 }
 
 .depth-stage::before {
@@ -73,4 +74,95 @@ select {
 .logo-orbit {
   transform: perspective(900px) rotateX(8deg) rotateY(-14deg);
   filter: drop-shadow(0 34px 44px rgba(0, 0, 0, 0.58));
+  animation: float-3d 6.5s ease-in-out infinite;
+}
+
+.game-card {
+  position: relative;
+  overflow: hidden;
+  transform: perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.game-card::after {
+  content: "";
+  position: absolute;
+  inset: -45%;
+  background: linear-gradient(115deg, transparent 36%, rgba(255, 255, 255, 0.16), transparent 58%);
+  transform: translateX(-35%) rotate(12deg);
+  transition: transform 420ms ease;
+  pointer-events: none;
+}
+
+.game-card:hover {
+  border-color: rgba(215, 25, 53, 0.58);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.38), 0 0 38px rgba(215, 25, 53, 0.18);
+  transform: perspective(900px) rotateX(3deg) rotateY(-4deg) translateY(-4px);
+}
+
+.game-card:hover::after {
+  transform: translateX(48%) rotate(12deg);
+}
+
+.holo-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.holo-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(216, 243, 240, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(216, 243, 240, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, black, transparent 84%);
+  opacity: 0.35;
+  animation: grid-drift 12s linear infinite;
+}
+
+.energy-ring {
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(216, 243, 240, 0.18);
+  border-radius: 999px;
+  transform: rotateX(68deg) rotateZ(-18deg);
+  animation: ring-spin 14s linear infinite;
+}
+
+.energy-ring::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  border: 1px solid rgba(215, 25, 53, 0.28);
+}
+
+@keyframes float-3d {
+  0%, 100% {
+    transform: perspective(900px) rotateX(8deg) rotateY(-14deg) translateY(0);
+  }
+  50% {
+    transform: perspective(900px) rotateX(11deg) rotateY(-8deg) translateY(-14px);
+  }
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 0 56px, 56px 0;
+  }
+}
+
+@keyframes ring-spin {
+  from {
+    transform: rotateX(68deg) rotateZ(0deg);
+  }
+  to {
+    transform: rotateX(68deg) rotateZ(360deg);
+  }
 }

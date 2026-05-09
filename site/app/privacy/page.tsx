@@ -4,15 +4,15 @@ import { SiteNav } from "@/components/site-nav";
 import { Badge, SectionTitle } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Politica de Privacidade | Party Loot Bot",
-  description: "Informacao sobre recolha, utilizacao e protecao de dados pessoais no Party Loot Bot."
+  title: "Politica de Privacidade | MordsFocas",
+  description: "Informacao sobre recolha, utilizacao e protecao de dados pessoais no MordsFocas."
 };
 
 const sections = [
   {
     title: "1. Responsavel pelo tratamento",
     body: [
-      "O Party Loot Bot e uma plataforma para gestao de eventos, jogadores, loot e subscricoes associadas a servidores Discord.",
+      "O MordsFocas e uma plataforma para gestao de eventos, jogadores, loot e subscricoes associadas a servidores Discord.",
       "Responsavel: [NOME DA ENTIDADE OU PESSOA RESPONSAVEL]. Contacto: [EMAIL DE CONTACTO]. Antes da publicacao, substitui estes campos pelos dados legais corretos."
     ]
   },
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
         <Badge tone="discord">Legal</Badge>
         <SectionTitle
           title="Politica de Privacidade"
-          text="Como o Party Loot Bot recolhe, usa e protege dados pessoais no dashboard e no bot Discord."
+          text="Como o MordsFocas recolhe, usa e protege dados pessoais no dashboard e no bot Discord."
         />
         <p className="mt-4 text-sm text-muted">Ultima atualizacao: 9 de maio de 2026</p>
 

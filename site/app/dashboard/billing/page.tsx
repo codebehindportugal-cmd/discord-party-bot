@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 const plans = [
   { name: "FREE", price: 0, events: "1 evento ativo", players: "5 jogadores", games: "1 jogo" },
   { name: "PRO", price: 9, events: "Eventos ilimitados", players: "20 jogadores", games: "2 jogos" },
-  { name: "PREMIUM", price: 19, events: "Tudo ilimitado", players: "Jogadores ilimitados", games: "Estatísticas avançadas" }
+  { name: "PREMIUM", price: 19, events: "Tudo ilimitado", players: "Jogadores ilimitados", games: "Estatisticas avancadas" }
 ];
 
 export default async function BillingPage() {
@@ -23,20 +23,21 @@ export default async function BillingPage() {
     <DashboardShell serverName={server?.name} plan={server?.plan}>
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-white">Subscrição</h1>
-          <p className="mt-2 text-slate-300">Plano atual: <Badge tone="discord">{server?.plan || "Sem servidor"}</Badge></p>
+          <h1 className="text-3xl font-semibold text-white">Subscricao do servidor</h1>
+          <p className="mt-2 text-slate-300">Plano atual para este servidor: <Badge tone="discord">{server?.plan || "Sem servidor"}</Badge></p>
         </div>
         <ButtonLink href="/api/stripe/portal">Portal Stripe</ButtonLink>
       </div>
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {plans.map((plan) => (
-          <div key={plan.name} className={`rounded-lg border p-6 ${plan.name === server?.plan ? "border-discord bg-discord/10" : "border-border bg-panel"}`}>
+          <div key={plan.name} className={`game-card rounded-lg border p-6 ${plan.name === server?.plan ? "border-discord bg-discord/10" : "border-border bg-panel"}`}>
             <h2 className="text-xl font-semibold text-white">{plan.name}</h2>
-            <p className="mt-4 text-3xl font-semibold text-white">{plan.price}€<span className="text-sm text-muted">/mês</span></p>
+            <p className="mt-4 text-3xl font-semibold text-white">{plan.price} EUR<span className="text-sm text-muted">/mes</span></p>
             <div className="mt-5 space-y-2 text-sm text-slate-300">
               <p>{plan.events}</p>
               <p>{plan.players}</p>
               <p>{plan.games}</p>
+              <p>Dados do servidor onde o bot esta instalado</p>
             </div>
           </div>
         ))}
@@ -49,8 +50,8 @@ export default async function BillingPage() {
           <thead className="bg-panelSoft text-slate-300">
             <tr>
               <th className="p-4">Data</th>
-              <th className="p-4">Método</th>
-              <th className="p-4">Referência</th>
+              <th className="p-4">Metodo</th>
+              <th className="p-4">Referencia</th>
               <th className="p-4">Valor</th>
             </tr>
           </thead>

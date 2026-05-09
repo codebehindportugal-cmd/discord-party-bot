@@ -28,7 +28,7 @@ export function DashboardShell({
           <span className="relative flex h-10 w-10 overflow-hidden rounded-md border border-white/10 bg-panelSoft">
             <BrandLogo />
           </span>
-          MordFocas
+          MordsFocas
         </Link>
         <div className="mt-8 rounded-lg border border-border bg-panelSoft p-4">
           <p className="text-sm text-muted">Servidor</p>
@@ -48,7 +48,7 @@ export function DashboardShell({
       </aside>
       <main className="lg:pl-72">
         <div className="border-b border-border bg-panel/70 px-4 py-4 backdrop-blur lg:hidden">
-          <Link href="/" className="font-semibold text-white">MordFocas</Link>
+          <Link href="/" className="font-semibold text-white">MordsFocas</Link>
         </div>
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">{children}</div>
       </main>

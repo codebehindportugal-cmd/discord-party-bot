@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 
+const logoSources = ["/images/mordsfocas-logo.png", "/images/mordfocas-logo.png"];
+
 export function BrandLogo({
   className = "h-full w-full",
-  alt = "MordFocas"
+  alt = "MordsFocas"
 }: {
   className?: string;
   alt?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const [sourceIndex, setSourceIndex] = useState(0);
 
   if (failed) {
     return (
@@ -21,10 +24,16 @@ export function BrandLogo({
 
   return (
     <img
-      src="/images/mordfocas-logo.png"
+      src={logoSources[sourceIndex]}
       alt={alt}
       className={`${className} object-cover`}
-      onError={() => setFailed(true)}
+      onError={() => {
+        if (sourceIndex < logoSources.length - 1) {
+          setSourceIndex((current) => current + 1);
+          return;
+        }
+        setFailed(true);
+      }}
     />
   );
 }

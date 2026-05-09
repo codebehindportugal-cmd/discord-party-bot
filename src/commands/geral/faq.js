@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { COLORS } = require('../../utils/embeds');
+const BOT_LOGO_URL = process.env.BOT_LOGO_URL || null;
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,7 +10,7 @@ module.exports = {
   async execute(interaction) {
     const embed = new EmbedBuilder()
       .setColor(COLORS.warning)
-      .setTitle('FAQ do Party Loot Bot')
+      .setTitle('FAQ do MordsFocas')
       .setDescription('Respostas rápidas para os problemas mais comuns.')
       .addFields(
         {
@@ -34,6 +35,8 @@ module.exports = {
         },
       )
       .setTimestamp();
+
+    if (BOT_LOGO_URL) embed.setThumbnail(BOT_LOGO_URL);
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
   },

@@ -4,22 +4,22 @@ import { SiteNav } from "@/components/site-nav";
 import { Badge, SectionTitle } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Termos e Condicoes | Party Loot Bot",
-  description: "Termos aplicaveis ao uso do Party Loot Bot, dashboard, subscricoes e funcionalidades Discord."
+  title: "Termos e Condicoes | MordsFocas",
+  description: "Termos aplicaveis ao uso do MordsFocas, dashboard, subscricoes e funcionalidades Discord."
 };
 
 const sections = [
   {
     title: "1. Aceitacao dos termos",
     body: [
-      "Ao usar o Party Loot Bot, o dashboard ou qualquer funcionalidade associada, aceitas estes Termos e Condicoes.",
+      "Ao usar o MordsFocas, o dashboard ou qualquer funcionalidade associada, aceitas estes Termos e Condicoes.",
       "Se usas o servico em nome de uma guild, comunidade ou servidor Discord, confirmas que tens autorizacao para configurar o bot e gerir os dados desse servidor."
     ]
   },
   {
     title: "2. Descricao do servico",
     body: [
-      "O Party Loot Bot ajuda comunidades Discord a gerir eventos, inscricoes, tracking de voz, classes, planos, loot e splits.",
+      "O MordsFocas ajuda comunidades Discord a gerir eventos, inscricoes, tracking de voz, classes, planos, loot e splits.",
       "Algumas funcionalidades podem depender de permissoes Discord, disponibilidade da API Discord, configuracao correta do servidor, ligacao a base de dados e plano ativo."
     ]
   },
@@ -62,7 +62,7 @@ const sections = [
   {
     title: "8. Limitacao de responsabilidade",
     body: [
-      "Na medida permitida por lei, o Party Loot Bot nao se responsabiliza por perdas indiretas, lucros cessantes, conflitos entre jogadores, erros de configuracao, decisoes administrativas de guilds ou indisponibilidade de servicos externos.",
+      "Na medida permitida por lei, o MordsFocas nao se responsabiliza por perdas indiretas, lucros cessantes, conflitos entre jogadores, erros de configuracao, decisoes administrativas de guilds ou indisponibilidade de servicos externos.",
       "O bot fornece calculos e ferramentas de apoio, mas a validacao final de eventos, loot e pagamentos internos cabe aos administradores do servidor."
     ]
   },
@@ -89,7 +89,7 @@ export default function TermsPage() {
         <Badge tone="discord">Legal</Badge>
         <SectionTitle
           title="Termos e Condicoes"
-          text="Regras de utilizacao do Party Loot Bot, dashboard, planos e funcionalidades ligadas ao Discord."
+          text="Regras de utilizacao do MordsFocas, dashboard, planos e funcionalidades ligadas ao Discord."
         />
         <p className="mt-4 text-sm text-muted">Ultima atualizacao: 9 de maio de 2026</p>
 
