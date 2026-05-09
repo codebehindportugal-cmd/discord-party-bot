@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-access";
 import { prisma } from "@/lib/prisma";
+import { getServerEnv } from "@/lib/server-env";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export async function POST() {
     return NextResponse.json({ error: "Sem acesso." }, { status: 403 });
   }
 
-  const token = process.env.DISCORD_TOKEN?.trim();
+  const token = getServerEnv("DISCORD_TOKEN");
 
   if (!token) {
     return NextResponse.json({
@@ -68,7 +69,7 @@ export async function POST() {
           discordId: guild.id,
           name: guild.name,
           plan: "FREE",
-          language: (process.env.DEFAULT_LANGUAGE || "pt").toUpperCase()
+          language: (getServerEnv("DEFAULT_LANGUAGE") || "pt").toUpperCase()
         }
       });
     }

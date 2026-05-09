@@ -55,7 +55,7 @@ const checks = [
   {
     label: "DISCORD_TOKEN",
     ok: Boolean(process.env.DISCORD_TOKEN),
-    fix: "Define DISCORD_TOKEN no site/.env para o botao Sincronizar servidores."
+    fix: "Define DISCORD_TOKEN no site/.env, nao apenas no .env da raiz."
   }
 ];
 
