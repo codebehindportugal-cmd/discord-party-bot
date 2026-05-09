@@ -310,10 +310,11 @@ async function handleCreateEventModal(interaction, client) {
   const durationValue = interaction.fields.getTextInputValue('duration') || '60';
   const imageUrl = interaction.fields.getTextInputValue('imageUrl') || null;
   const description = interaction.fields.getTextInputValue('description') || null;
-  const scheduledAt = dateValue?.trim() ? parsePtDate(dateValue) : new Date();
+  const hasDateValue = Boolean(dateValue?.trim());
+  const scheduledAt = hasDateValue ? parsePtDate(dateValue) : new Date(Date.now() + 1000);
   const durationMinutes = Math.max(5, Math.min(1440, Number(durationValue) || 60));
 
-  if (Number.isNaN(scheduledAt.getTime()) || scheduledAt < new Date()) {
+  if (Number.isNaN(scheduledAt.getTime()) || (hasDateValue && scheduledAt < new Date())) {
     return interaction.reply({ embeds: [errorEmbed('Data inválida', 'Usa o formato DD/MM/AAAA HH:MM com uma data futura, ou deixa vazio para criar agora.')], ephemeral: true });
   }
 
