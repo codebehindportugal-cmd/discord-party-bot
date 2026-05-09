@@ -94,6 +94,10 @@ function commandHelpEmbed() {
 
 function parsePtDate(value) {
   const text = String(value || '').trim();
+  if (!text || ['agora', 'now', 'hoje'].includes(text.toLowerCase())) {
+    return new Date(Date.now() + 1000);
+  }
+
   const match = text.match(/^(\d{1,4})[\/-](\d{1,2})[\/-](\d{1,4})(?:\s+(\d{1,2})(?::(\d{1,2}))?)?$/);
   if (!match) return new Date(NaN);
 
@@ -327,11 +331,15 @@ async function handleCreateEventModal(interaction, client) {
   const imageUrl = interaction.fields.getTextInputValue('imageUrl') || null;
   const description = interaction.fields.getTextInputValue('description') || null;
   const hasDateValue = Boolean(dateValue?.trim());
-  const scheduledAt = hasDateValue ? parsePtDate(dateValue) : new Date(Date.now() + 1000);
+  let scheduledAt = hasDateValue ? parsePtDate(dateValue) : new Date(Date.now() + 1000);
   const durationMinutes = Math.max(5, Math.min(1440, Number(durationValue) || 60));
 
-  if (Number.isNaN(scheduledAt.getTime()) || (hasDateValue && scheduledAt < new Date())) {
+  if (Number.isNaN(scheduledAt.getTime())) {
     return interaction.reply({ embeds: [errorEmbed('Data inválida', 'Usa o formato DD/MM/AAAA HH:MM com uma data futura, ou deixa vazio para criar agora.')], ephemeral: true });
+  }
+
+  if (scheduledAt < new Date()) {
+    scheduledAt = new Date(Date.now() + 1000);
   }
 
   const game = await prisma.game.findUnique({ where: { id: gameId } });

@@ -40,6 +40,10 @@ function dateSuggestions() {
 
 function parsePtDate(value) {
   const text = String(value || '').trim();
+  if (!text || ['agora', 'now', 'hoje'].includes(text.toLowerCase())) {
+    return new Date(Date.now() + 1000);
+  }
+
   const match = text.match(/^(\d{1,4})[\/-](\d{1,2})[\/-](\d{1,4})(?:\s+(\d{1,2})(?::(\d{1,2}))?)?$/);
   if (!match) return new Date(NaN);
 
@@ -167,9 +171,13 @@ module.exports = {
       });
     }
 
-    const scheduledAt = parsePtDate(interaction.options.getString('data'));
-    if (Number.isNaN(scheduledAt.getTime()) || scheduledAt < new Date()) {
+    let scheduledAt = parsePtDate(interaction.options.getString('data'));
+    if (Number.isNaN(scheduledAt.getTime())) {
       return interaction.editReply({ embeds: [errorEmbed('Data invalida', 'Usa o formato DD/MM/AAAA HH:MM com uma data futura.')] });
+    }
+
+    if (scheduledAt < new Date()) {
+      scheduledAt = new Date(Date.now() + 1000);
     }
 
     const gameId = interaction.options.getString('jogo');
