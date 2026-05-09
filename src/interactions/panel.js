@@ -93,10 +93,26 @@ function commandHelpEmbed() {
 }
 
 function parsePtDate(value) {
-  const [datePart, timePart = '20:00'] = value.trim().split(/\s+/);
-  const [day, month, year] = datePart.split('/');
-  const [hour, minute] = timePart.split(':');
-  return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute));
+  const text = String(value || '').trim();
+  const match = text.match(/^(\d{1,4})[\/-](\d{1,2})[\/-](\d{1,4})(?:\s+(\d{1,2})(?::(\d{1,2}))?)?$/);
+  if (!match) return new Date(NaN);
+
+  const first = Number(match[1]);
+  const second = Number(match[2]);
+  const third = Number(match[3]);
+  const hour = Number(match[4] || 20);
+  const minute = Number(match[5] || 0);
+
+  const yearFirst = match[1].length === 4;
+  const year = yearFirst ? first : third;
+  const month = second;
+  const day = yearFirst ? third : first;
+
+  if (year < 2000 || month < 1 || month > 12 || day < 1 || day > 31 || hour > 23 || minute > 59) {
+    return new Date(NaN);
+  }
+
+  return new Date(year, month - 1, day, hour, minute);
 }
 
 async function getServerOrReply(interaction, prisma) {
