@@ -18,10 +18,10 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 18% 12%, rgba(88, 101, 242, 0.18), transparent 30%),
-    radial-gradient(circle at 82% 0%, rgba(52, 211, 153, 0.1), transparent 28%),
-    #0b0f19;
-  color: #e5edf8;
+    radial-gradient(circle at 16% 4%, rgba(216, 243, 240, 0.12), transparent 30%),
+    radial-gradient(circle at 84% 8%, rgba(215, 25, 53, 0.18), transparent 26%),
+    linear-gradient(140deg, #050607 0%, #0f1618 46%, #080b0d 100%);
+  color: #e8f2f0;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: 0;
 }
@@ -45,7 +45,32 @@ select {
 
 .grid-bg {
   background-image:
-    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(216, 243, 240, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(216, 243, 240, 0.055) 1px, transparent 1px);
   background-size: 44px 44px;
+}
+
+.depth-stage {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 34%),
+    radial-gradient(circle at 24% 18%, rgba(216, 243, 240, 0.18), transparent 26%),
+    radial-gradient(circle at 78% 16%, rgba(215, 25, 53, 0.22), transparent 28%),
+    linear-gradient(145deg, #151d1f, #07090a 72%);
+}
+
+.depth-stage::before {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: 999px;
+  background: rgba(216, 243, 240, 0.08);
+  filter: blur(44px);
+  transform: rotate(-18deg);
+}
+
+.logo-orbit {
+  transform: perspective(900px) rotateX(8deg) rotateY(-14deg);
+  filter: drop-shadow(0 34px 44px rgba(0, 0, 0, 0.58));
 }

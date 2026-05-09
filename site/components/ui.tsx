@@ -7,7 +7,7 @@ export function Badge({ children, tone = "default" }: { children: React.ReactNod
     success: "border-success/30 bg-success/10 text-success",
     warning: "border-warning/30 bg-warning/10 text-warning",
     danger: "border-danger/30 bg-danger/10 text-danger",
-    discord: "border-discord/30 bg-discord/10 text-indigo-200"
+    discord: "border-discord/35 bg-discord/10 text-red-100"
   };
 
   return <span className={cn("inline-flex items-center rounded-md border px-2 py-1 text-xs font-medium", tones[tone])}>{children}</span>;
@@ -19,7 +19,7 @@ export function ButtonLink({ href, children, variant = "primary" }: { href: stri
       href={href}
       className={cn(
         "inline-flex min-h-10 items-center justify-center rounded-md px-4 text-sm font-semibold transition",
-        variant === "primary" ? "bg-discord text-white hover:bg-indigo-500" : "border border-border bg-panelSoft text-slate-100 hover:border-slate-500"
+        variant === "primary" ? "bg-discord text-white shadow-glow hover:bg-red-600" : "border border-border bg-panelSoft text-slate-100 hover:border-slate-500"
       )}
     >
       {children}

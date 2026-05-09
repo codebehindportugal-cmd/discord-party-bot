@@ -1,16 +1,16 @@
 # Party Loot Site
 
-Site de gestão para o Discord Party Loot Bot.
+Site de gestao para o Discord Party Loot Bot.
 
 ## Stack
 
 - Next.js 14 App Router
 - TypeScript
 - Tailwind CSS
-- Prisma + PostgreSQL
+- Prisma + MySQL
 - NextAuth com conta local por email/password
-- Stripe para subscrições
-- Recharts para gráficos
+- Stripe para subscricoes
+- Recharts para graficos
 
 ## Arranque
 
@@ -25,15 +25,27 @@ Depois abre `http://localhost:3000`.
 
 ## Login
 
-O site usa contas locais por email/password. A primeira conta criada recebe role `ADMIN`.
+O site usa contas locais por email/password. Contas criadas pelo formulario entram sempre com role `USER`.
 
-Para restringir o super-admin a emails específicos, coloca no `site/.env`:
+Para criar ou atualizar uma conta admin, usa:
+
+```bash
+ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='uma_password_forte' npm run seed:admin
+```
+
+Para restringir o super-admin a emails especificos, coloca no `site/.env`:
 
 ```env
 SUPER_ADMIN_EMAILS=admin@example.com
 ```
 
-## Integração com o bot
+Se contas foram promovidas a admin por engano, mantem apenas os emails admin nesta lista:
+
+```bash
+ADMIN_EMAILS=admin@example.com npm run demote:users
+```
+
+## Integracao com o bot
 
 Define o mesmo segredo nos dois lados:
 
@@ -46,7 +58,7 @@ SITE_API_KEY=um_segredo_forte
 BOT_API_KEY=um_segredo_forte
 ```
 
-Endpoints disponíveis:
+Endpoints disponiveis:
 
 - `GET /api/bot/server/:discordId`
 - `POST /api/bot/event`
@@ -65,14 +77,13 @@ x-api-key: um_segredo_forte
 O painel `/admin` permite:
 
 - Dar acesso `FREE`, `PRO` ou `PREMIUM` a um servidor Discord.
-- Criar jogos globais disponíveis para os servidores.
+- Criar jogos globais disponiveis para os servidores.
 - Criar classes globais por jogo.
 
-Quando `DATABASE_URL` estiver ligado a PostgreSQL, os endpoints `/api/admin/games`, `/api/admin/classes` e `/api/admin/subscriptions` persistem estes dados via Prisma.
+Quando `DATABASE_URL` estiver ligado a MySQL, os endpoints `/api/admin/games`, `/api/admin/classes` e `/api/admin/subscriptions` persistem estes dados via Prisma.
 
-## Próximos passos de produção
+## Proximos passos de producao
 
 - Trocar as listas mockadas do dashboard por queries Prisma reais.
-- Trocar as listas mockadas do dashboard por queries Prisma reais.
-- Implementar Stripe Checkout, Customer Portal e validação do webhook.
+- Implementar Stripe Checkout, Customer Portal e validacao do webhook.
 - Fazer o bot chamar `SITE_API_URL` para sincronizar eventos e splits.

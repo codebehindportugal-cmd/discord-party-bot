@@ -25,13 +25,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Já existe uma conta com este email." }, { status: 409 });
     }
 
-    const userCount = await prisma.siteUser.count();
     const user = await prisma.siteUser.create({
       data: {
         name: name || null,
         email,
         passwordHash: hashPassword(password),
-        role: userCount === 0 ? "ADMIN" : "USER"
+        role: "USER"
       }
     });
 

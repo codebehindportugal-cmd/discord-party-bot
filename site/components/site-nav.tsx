@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { Bot, Gauge, ShieldCheck } from "lucide-react";
+import { Gauge, ShieldCheck } from "lucide-react";
 import { AuthButton } from "@/components/auth-button";
+import { BrandLogo } from "@/components/brand-logo";
 import { ButtonLink } from "@/components/ui";
 
 const nav = [
-  { href: "/pricing", label: "Preços" },
+  { href: "/install", label: "Instalar" },
+  { href: "/pricing", label: "Precos" },
   { href: "/docs", label: "Comandos" },
   { href: "/status", label: "Status" },
   { href: "/terms", label: "Legal" }
@@ -15,10 +17,10 @@ export function SiteNav() {
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-3 font-semibold text-white">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-discord">
-            <Bot size={20} />
+          <span className="relative flex h-10 w-10 overflow-hidden rounded-md border border-white/10 bg-panelSoft shadow-glow">
+            <BrandLogo />
           </span>
-          Party Loot
+          MordFocas
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-slate-300 md:flex">
           {nav.map((item) => (

@@ -11,12 +11,12 @@ export async function getAdminSession() {
   const isConfigured = allowedEmails.length > 0;
   const email = session?.user?.email?.toLowerCase();
   const isRoleAdmin = session?.user?.role === "ADMIN";
-  const isAllowed = Boolean(email && allowedEmails.includes(email));
+  const isEmailAllowed = Boolean(email && allowedEmails.includes(email));
 
   return {
     session,
     isConfigured,
-    isAllowed: isRoleAdmin || (isConfigured ? isAllowed : Boolean(session)),
+    isAllowed: isRoleAdmin && (isConfigured ? isEmailAllowed : true),
     userId: session?.user?.id
   };
 }

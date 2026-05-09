@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { Badge, StatCard } from "@/components/ui";
 
 type PlanName = "FREE" | "PRO" | "PREMIUM";
@@ -58,6 +59,7 @@ export function AdminConsole({
   const [classRole, setClassRole] = useState<RoleName>("DPS");
   const [classEmoji, setClassEmoji] = useState("⚔️");
   const [message, setMessage] = useState("");
+  const [syncingServers, setSyncingServers] = useState(false);
 
   const mrr = useMemo(() => {
     const prices: Record<string, number> = { FREE: 0, PRO: 9, PREMIUM: 19 };
@@ -70,6 +72,32 @@ export function AdminConsole({
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload)
     }).catch(() => null);
+  }
+
+  async function syncServers() {
+    setSyncingServers(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/sync-guilds", {
+        method: "POST"
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setMessage(payload.error || "Nao foi possivel sincronizar servidores.");
+        return;
+      }
+
+      const nextServers = payload.servers || [];
+      setServers(nextServers);
+      setSelectedServerId((current) => current || nextServers[0]?.id || "");
+      setMessage(`Sincronizacao concluida. Servidores encontrados: ${payload.synced}.`);
+    } catch (error) {
+      setMessage("Nao foi possivel sincronizar servidores.");
+    } finally {
+      setSyncingServers(false);
+    }
   }
 
   async function applyPlan() {
@@ -152,7 +180,18 @@ export function AdminConsole({
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-discord">Super-admin</p>
           <h1 className="mt-2 text-3xl font-semibold text-white">Acessos, jogos e classes</h1>
         </div>
-        {showDevAccessWarning ? <Badge tone="warning">SUPER_ADMIN_EMAILS vazio</Badge> : <Badge tone="success">Acesso restrito</Badge>}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={syncServers}
+            disabled={syncingServers}
+            className="inline-flex min-h-10 items-center justify-center rounded-md border border-border bg-panelSoft px-4 text-sm font-semibold text-white hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw className={`mr-2 ${syncingServers ? "animate-spin" : ""}`} size={16} />
+            {syncingServers ? "A sincronizar" : "Sincronizar servidores"}
+          </button>
+          {showDevAccessWarning ? <Badge tone="warning">SUPER_ADMIN_EMAILS vazio</Badge> : <Badge tone="success">Acesso restrito</Badge>}
+        </div>
       </div>
 
       {message ? (

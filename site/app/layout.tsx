@@ -3,8 +3,8 @@ import { SessionProvider } from "@/components/session-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Party Loot Bot",
-  description: "Dashboard para gerir loot, eventos e subscrições do bot Discord."
+  title: "MordFocas",
+  description: "Dashboard para gerir eventos, loot e subscricoes do bot MordFocas."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
