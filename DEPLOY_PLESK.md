@@ -72,6 +72,15 @@ npm run build
 
 Then click **Restart App** in Plesk Node.js.
 
+If the browser shows **403 Forbidden**, Plesk is usually serving the document root directly instead of the Node.js app. Check:
+
+- Node.js is enabled for this domain or subdomain.
+- **Application root** is `site`.
+- **Document root** is `site/public`.
+- **Application startup file** is `server.js`.
+- `npm run build` was executed inside `site`.
+- The Node.js app was restarted after the build.
+
 ## 4. Deploy the Discord bot
 
 The bot is a long-running Node.js process, so it should be configured as a second Node.js app. A clean setup is to use a subdomain such as `bot.example.com`, even if it does not serve web pages.
@@ -121,6 +130,14 @@ npm run deploy-commands
 ```
 
 Then click **Restart App** in Plesk Node.js.
+
+If `npm run deploy-commands` returns **DiscordAPIError[0]: 401 Unauthorized**, the Discord credentials in Plesk are wrong:
+
+- `DISCORD_TOKEN` must be the bot token from **Discord Developer Portal > Bot > Reset/View Token**.
+- Do not include the prefix `Bot `.
+- Do not use the Client Secret as the bot token.
+- `DISCORD_CLIENT_ID` must be the **Application ID** from the same Discord application.
+- After changing variables in Plesk, run `npm run deploy-commands` again.
 
 ## 5. Recommended Git deployment actions
 
