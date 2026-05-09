@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { EarningsChart, PlayerActivityChart } from "@/components/charts";
+import { ClaimServerForm } from "@/components/claim-server-form";
 import { Badge, StatCard } from "@/components/ui";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserServer } from "@/lib/user-server-access";
 import { formatGold } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +16,7 @@ function weekLabel(date: Date) {
 }
 
 export default async function DashboardPage() {
-  const selectedServer = await prisma.server.findFirst({ orderBy: { createdAt: "desc" } });
+  const { server: selectedServer } = await getCurrentUserServer();
 
   if (!selectedServer) {
     return (
