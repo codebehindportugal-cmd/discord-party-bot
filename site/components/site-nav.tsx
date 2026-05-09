@@ -6,7 +6,8 @@ import { ButtonLink } from "@/components/ui";
 const nav = [
   { href: "/pricing", label: "Preços" },
   { href: "/docs", label: "Comandos" },
-  { href: "/status", label: "Status" }
+  { href: "/status", label: "Status" },
+  { href: "/terms", label: "Legal" }
 ];
 
 export function SiteNav() {

@@ -5,7 +5,7 @@ This repo contains two Node.js apps:
 - `discord-party-bot`: the Discord bot at the repository root.
 - `party-loot-site`: the Next.js dashboard inside `site/`.
 
-Use the same PostgreSQL database URL for both apps if the bot and site should share data.
+Use the same MySQL database URL for both apps if the bot and site should share data.
 
 ## 1. Push the repo to Git
 
@@ -18,15 +18,15 @@ git push origin main
 ## 2. Create the database in Plesk
 
 1. Open **Databases** in Plesk.
-2. Create a PostgreSQL database, for example `partybot`.
+2. Create a MySQL database, for example `partybot`.
 3. Create or assign a database user.
 4. Copy the connection string:
 
 ```env
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/partybot"
+DATABASE_URL="mysql://USER:PASSWORD@HOST:3306/partybot"
 ```
 
-If PostgreSQL runs on the same server, `HOST` is often `localhost`.
+If MySQL runs on the same server, `HOST` is often `localhost`.
 
 ## 3. Deploy the Next.js site
 
@@ -51,7 +51,7 @@ Set these environment variables in the Plesk Node.js screen:
 NODE_ENV=production
 NEXTAUTH_URL=https://party.example.com
 NEXTAUTH_SECRET=replace_with_a_long_random_secret
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/partybot"
+DATABASE_URL="mysql://USER:PASSWORD@HOST:3306/partybot"
 SUPER_ADMIN_EMAILS=admin@example.com
 BOT_API_KEY=replace_with_the_same_secret_as_SITE_API_KEY
 STRIPE_SECRET_KEY=sk_live_or_test_key
@@ -98,7 +98,7 @@ DISCORD_TOKEN=your_bot_token
 DISCORD_CLIENT_ID=your_discord_application_client_id
 PREFIX=!
 DEFAULT_LANGUAGE=pt
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/partybot"
+DATABASE_URL="mysql://USER:PASSWORD@HOST:3306/partybot"
 SITE_API_URL=https://party.example.com/api
 SITE_API_KEY=replace_with_the_same_secret_as_BOT_API_KEY
 FREE_MAX_PLAYERS=5
