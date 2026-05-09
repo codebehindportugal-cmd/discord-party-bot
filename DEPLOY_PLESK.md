@@ -68,6 +68,7 @@ npm install
 npm run db:generate
 npm run db:push
 npm run build
+npm run check:prod
 ```
 
 Then click **Restart App** in Plesk Node.js.
