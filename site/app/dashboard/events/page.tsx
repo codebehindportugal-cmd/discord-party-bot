@@ -2,12 +2,13 @@ import Link from "next/link";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Badge } from "@/components/ui";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserServer } from "@/lib/user-server-access";
 import { formatGold } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
-  const selectedServer = await prisma.server.findFirst({ orderBy: { createdAt: "desc" } });
+  const { server: selectedServer } = await getCurrentUserServer();
   const events = selectedServer
     ? await prisma.event.findMany({
         where: { serverId: selectedServer.id },

@@ -3,6 +3,7 @@ import { DashboardShell } from "@/components/dashboard-shell";
 import { SplitPieChart } from "@/components/charts";
 import { Badge, StatCard } from "@/components/ui";
 import { prisma } from "@/lib/prisma";
+import { canAccessServer } from "@/lib/user-server-access";
 import { formatGold, formatMinutes } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
   });
 
   if (!event) notFound();
+  if (!(await canAccessServer(event.serverId))) notFound();
 
   const lootTotal = event.lootEntries.reduce((total, entry) => total + entry.value, 0);
   const duration = event.startedAt && event.endedAt ? Math.max(0, (event.endedAt.getTime() - event.startedAt.getTime()) / 60000) : 0;

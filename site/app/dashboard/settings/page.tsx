@@ -1,6 +1,6 @@
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Badge } from "@/components/ui";
-import { prisma } from "@/lib/prisma";
+import { getCurrentUserServer } from "@/lib/user-server-access";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ function channelValue(id?: string | null) {
 }
 
 export default async function SettingsPage() {
-  const server = await prisma.server.findFirst({ orderBy: { createdAt: "desc" } });
+  const { server } = await getCurrentUserServer();
 
   return (
     <DashboardShell serverName={server?.name} plan={server?.plan}>

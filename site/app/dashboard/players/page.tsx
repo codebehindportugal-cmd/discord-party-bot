@@ -1,12 +1,13 @@
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Badge } from "@/components/ui";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserServer } from "@/lib/user-server-access";
 import { formatGold, formatMinutes } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function PlayersPage() {
-  const selectedServer = await prisma.server.findFirst({ orderBy: { createdAt: "desc" } });
+  const { server: selectedServer } = await getCurrentUserServer();
   const players = selectedServer
     ? await prisma.player.findMany({
         where: { serverId: selectedServer.id },

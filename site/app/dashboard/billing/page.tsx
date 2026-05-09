@@ -1,6 +1,8 @@
 import { DashboardShell } from "@/components/dashboard-shell";
+import { ClaimServerForm } from "@/components/claim-server-form";
 import { Badge, ButtonLink } from "@/components/ui";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserServer } from "@/lib/user-server-access";
 
 export const dynamic = "force-dynamic";
 
@@ -11,26 +13,40 @@ const plans = [
 ];
 
 export default async function BillingPage() {
-  const server = await prisma.server.findFirst({
-    orderBy: { createdAt: "desc" },
-    include: {
-      invoices: { orderBy: { createdAt: "desc" }, take: 10 },
-      subscriptions: { include: { plan: true }, orderBy: { createdAt: "desc" }, take: 1 }
-    }
-  });
+  const { server: currentServer } = await getCurrentUserServer();
+  const server = currentServer
+    ? await prisma.server.findUnique({
+        where: { id: currentServer.id },
+        include: {
+          invoices: { orderBy: { createdAt: "desc" }, take: 10 },
+          subscriptions: { include: { plan: true }, orderBy: { createdAt: "desc" }, take: 1 }
+        }
+      })
+    : null;
+
+  if (!server) {
+    return (
+      <DashboardShell>
+        <h1 className="text-3xl font-semibold text-white">Subscricao</h1>
+        <div className="mt-8">
+          <ClaimServerForm />
+        </div>
+      </DashboardShell>
+    );
+  }
 
   return (
-    <DashboardShell serverName={server?.name} plan={server?.plan}>
+    <DashboardShell serverName={server.name} plan={server.plan}>
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-3xl font-semibold text-white">Subscricao do servidor</h1>
-          <p className="mt-2 text-slate-300">Plano atual para este servidor: <Badge tone="discord">{server?.plan || "Sem servidor"}</Badge></p>
+          <p className="mt-2 text-slate-300">Plano atual para este servidor: <Badge tone="discord">{server.plan}</Badge></p>
         </div>
         <ButtonLink href="/api/stripe/portal">Portal Stripe</ButtonLink>
       </div>
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {plans.map((plan) => (
-          <div key={plan.name} className={`game-card rounded-lg border p-6 ${plan.name === server?.plan ? "border-discord bg-discord/10" : "border-border bg-panel"}`}>
+          <div key={plan.name} className={`game-card rounded-lg border p-6 ${plan.name === server.plan ? "border-discord bg-discord/10" : "border-border bg-panel"}`}>
             <h2 className="text-xl font-semibold text-white">{plan.name}</h2>
             <p className="mt-4 text-3xl font-semibold text-white">{plan.price} EUR<span className="text-sm text-muted">/mes</span></p>
             <div className="mt-5 space-y-2 text-sm text-slate-300">
@@ -56,7 +72,7 @@ export default async function BillingPage() {
             </tr>
           </thead>
           <tbody>
-            {server?.invoices.map((invoice) => (
+            {server.invoices.map((invoice) => (
               <tr key={invoice.id} className="border-t border-border">
                 <td className="p-4 text-slate-300">{(invoice.paidAt || invoice.createdAt).toLocaleString("pt-PT")}</td>
                 <td className="p-4 text-white">{invoice.paymentMethod}</td>
@@ -64,7 +80,7 @@ export default async function BillingPage() {
                 <td className="p-4 text-gold">{(invoice.amount / 100).toFixed(2)} {invoice.currency}</td>
               </tr>
             ))}
-            {!server?.invoices.length ? (
+            {!server.invoices.length ? (
               <tr><td className="p-4 text-muted" colSpan={4}>Sem pagamentos registados.</td></tr>
             ) : null}
           </tbody>

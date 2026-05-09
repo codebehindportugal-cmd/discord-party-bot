@@ -44,13 +44,20 @@ export default function LoginPage() {
         callbackUrl: "/dashboard"
       });
 
-      if (result?.error) {
+      if (!result) {
+        setMessage("Nao foi possivel contactar a autenticacao. Tenta novamente.");
+        return;
+      }
+
+      if (result.error) {
         setMessage("Email ou password incorretos.");
         return;
       }
 
       router.push("/dashboard");
       router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Ocorreu um erro inesperado. Tenta novamente.");
     } finally {
       setLoading(false);
     }

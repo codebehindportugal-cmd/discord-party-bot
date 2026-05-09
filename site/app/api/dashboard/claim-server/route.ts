@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
   const alreadyClaimedByOtherUser = server.accesses.some((access) => access.userId !== userId);
 
-  if (alreadyClaimedByOtherUser && session.user.role !== "ADMIN") {
+  if (alreadyClaimedByOtherUser && session.user?.role !== "ADMIN") {
     return NextResponse.json({
       error: "Este servidor ja esta associado a outra conta. Contacta o super-admin."
     }, { status: 409 });

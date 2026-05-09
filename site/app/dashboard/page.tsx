@@ -22,8 +22,8 @@ export default async function DashboardPage() {
     return (
       <DashboardShell>
         <h1 className="text-3xl font-semibold text-white">Dashboard</h1>
-        <div className="mt-8 rounded-lg border border-warning/30 bg-warning/10 p-6 text-warning">
-          Ainda não há servidores registados. Liga o bot a um servidor ou corre `npm run sync-guilds`.
+        <div className="mt-8">
+          <ClaimServerForm />
         </div>
       </DashboardShell>
     );
@@ -66,14 +66,14 @@ export default async function DashboardPage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-discord">Dashboard</p>
-          <h1 className="mt-2 text-3xl font-semibold text-white">Visão geral do servidor</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-white">Visao geral do servidor</h1>
         </div>
         <Badge tone="success">Dados reais</Badge>
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-4">
         <StatCard label="Eventos totais" value={String(eventsCount)} helper={`${activeEvents} em progresso`} />
-        <StatCard label="Gold distribuído" value={formatGold(totalGold._sum.amount || 0)} />
+        <StatCard label="Gold distribuido" value={formatGold(totalGold._sum.amount || 0)} />
         <StatCard label="Jogadores registados" value={String(playerCount)} />
         <StatCard label="Eventos abertos" value={String(pendingEvents)} />
       </div>
@@ -96,7 +96,7 @@ export default async function DashboardPage() {
       <section className="mt-8 rounded-lg border border-border bg-panel">
         <div className="flex items-center justify-between border-b border-border p-5">
           <h2 className="font-semibold text-white">Eventos recentes</h2>
-          <Link href="/dashboard/events" className="text-sm text-discord hover:text-indigo-300">Ver todos</Link>
+          <Link href="/dashboard/events" className="text-sm text-discord hover:text-red-300">Ver todos</Link>
         </div>
         <div className="divide-y divide-border">
           {recentEvents.length ? recentEvents.map((event) => (
