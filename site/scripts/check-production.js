@@ -51,6 +51,11 @@ const checks = [
     label: "NEXTAUTH_SECRET",
     ok: Boolean(process.env.NEXTAUTH_SECRET),
     fix: "Define NEXTAUTH_SECRET com uma string longa e privada."
+  },
+  {
+    label: "DISCORD_TOKEN",
+    ok: Boolean(process.env.DISCORD_TOKEN),
+    fix: "Define DISCORD_TOKEN no site/.env para o botao Sincronizar servidores."
   }
 ];
 
